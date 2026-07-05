@@ -388,6 +388,34 @@
       background-position: 0 0, 0 6px, 6px -6px, -6px 0;
     }
 
+    .site-footer {
+      width: 100%;
+      margin-top: 40px;
+      padding: 24px 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .site-footer .footer-inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .site-footer a {
+      color: var(--green);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .site-footer a:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 760px) {
       header {
         grid-template-columns: 1fr;
@@ -592,6 +620,14 @@
       </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>作者: アースキー</span>
+      <span>LP:</span>
+      <a href="https://earthkey-portfolio.vercel.app/" target="_blank" rel="noopener">https://earthkey-portfolio.vercel.app/</a>
+    </div>
+  </footer>
 
   <script>
     const state = { files: [], results: [] };

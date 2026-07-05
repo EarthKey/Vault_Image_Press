@@ -789,6 +789,9 @@
     const rmStopServerButton = document.getElementById("rmStopServer");
     const rmServerStatus = document.getElementById("rmServerStatus");
     const LOCAL_SERVER_URL = "http://127.0.0.1:8765";
+    // server.py側のAPI_TOKENと同じ値。file://ページのOriginしかCORS許可していないうえ、
+    // このヘッダーを知らない一般のWebページからは呼び出せないようにするための合言葉。
+    const LOCAL_SERVER_TOKEN = "vip-local-only-2026";
 
     async function checkLocalServer() {
       try {
@@ -827,7 +830,11 @@
       rmStopServerButton.disabled = true;
       rmServerStatus.textContent = "状態: 停止しています…";
       try {
-        await fetch(`${LOCAL_SERVER_URL}/shutdown`, { method: "POST", signal: AbortSignal.timeout(1500) });
+        await fetch(`${LOCAL_SERVER_URL}/shutdown`, {
+          method: "POST",
+          headers: { "X-VIP-Token": LOCAL_SERVER_TOKEN },
+          signal: AbortSignal.timeout(1500)
+        });
       } catch {
         // サーバーが自プロセスを終了する際に応答を返せず接続が切れるのは正常
       }
@@ -931,7 +938,11 @@
       form.append("file", file, file.name);
       let response;
       try {
-        response = await fetch(`${LOCAL_SERVER_URL}/remove-bg`, { method: "POST", body: form });
+        response = await fetch(`${LOCAL_SERVER_URL}/remove-bg`, {
+          method: "POST",
+          headers: { "X-VIP-Token": LOCAL_SERVER_TOKEN },
+          body: form
+        });
       } catch (error) {
         throw new Error("ローカルサーバーに接続できません。start_server.batを起動しているか確認してください。");
       }

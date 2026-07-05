@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vault Image Press</title>
+  <style>
+    :root {
+      --ink: #243129;
+      --muted: #66736b;
+      --paper: #f3efe4;
+      --paper-deep: #e4dccb;
+      --green: #315c4b;
+      --green-light: #dce9df;
+      --orange: #c9673d;
+      --line: #bdb5a4;
+      --white: #fffdf7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(255, 255, 255, .9), transparent 25rem),
+        repeating-linear-gradient(0deg, transparent 0 4px, rgba(54, 48, 37, .025) 4px 5px),
+        var(--paper);
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 64px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+    }
+
+    h1 {
+      margin: 6px 0 4px;
+      font-size: clamp(32px, 6vw, 64px);
+      line-height: 1;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .privacy {
+      border: 1px solid var(--green);
+      padding: 8px 12px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      transform: rotate(-2deg);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 20px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 247, .8);
+      box-shadow: 5px 6px 0 rgba(49, 92, 75, .12);
+    }
+
+    .dropzone {
+      min-height: 220px;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      padding: 28px;
+      border: 2px dashed var(--line);
+      margin: 14px;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .dropzone.dragover {
+      background: var(--green-light);
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+
+    .drop-mark {
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      color: var(--white);
+      background: var(--green);
+      font-size: 30px;
+    }
+
+    .dropzone strong {
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+      font-size: 20px;
+    }
+
+    .dropzone span {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .settings {
+      padding: 20px;
+    }
+
+    .settings h2 {
+      margin: 0 0 18px;
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      margin-top: 6px;
+      padding: 10px 11px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--white);
+      font: inherit;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--green);
+    }
+
+    .quality-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .45;
+    }
+
+    .primary {
+      width: 100%;
+      margin-top: 22px;
+      color: var(--white);
+      background: var(--green);
+    }
+
+    .secondary {
+      color: var(--green);
+      background: var(--green-light);
+    }
+
+    .clear {
+      color: var(--orange);
+      background: transparent;
+    }
+
+    .queue {
+      margin-top: 20px;
+    }
+
+    .queue-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .queue h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .summary {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summary strong {
+      color: var(--green);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .items {
+      display: grid;
+      gap: 12px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 247, .75);
+    }
+
+    .item img {
+      width: 84px;
+      height: 84px;
+      object-fit: cover;
+      background: var(--paper-deep);
+    }
+
+    .item-name {
+      overflow: hidden;
+      font-size: 16px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .item-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .save-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      color: var(--white);
+      background: var(--orange);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .saving {
+      color: var(--orange);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .item-actions {
+      display: grid;
+      gap: 6px;
+      justify-items: stretch;
+    }
+
+    .item-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--green-light);
+      white-space: nowrap;
+    }
+
+    .item-btn.is-done {
+      color: var(--white);
+      background: var(--green);
+    }
+
+    .item-btn:disabled {
+      cursor: not-allowed;
+      opacity: .5;
+    }
+
+    .actions {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .actions.show {
+      display: grid;
+    }
+
+    .note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      color: var(--muted);
+      background: transparent;
+      border-bottom: 3px solid transparent;
+      font-weight: 700;
+    }
+
+    .tab-btn.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .item img.cutout-thumb {
+      background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      .privacy {
+        justify-self: start;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .settings {
+        order: -1;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">Local image workshop</div>
+        <h1>Vault Image Press</h1>
+        <p>Obsidianへ入れる前に、画像を軽く整える道具。</p>
+      </div>
+      <div class="privacy">画像は外部送信しません</div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" id="tabCompressBtn">画像圧縮</button>
+      <button class="tab-btn" id="tabRemoveBtn">背景除去</button>
+      <button class="tab-btn" id="tabPdfBtn">PDF変換</button>
+    </nav>
+
+    <section class="tab-panel active" id="panelCompress">
+      <div class="workspace">
+        <section>
+          <div class="panel">
+            <label class="dropzone" id="dropzone" for="fileInput">
+              <div class="drop-mark">↓</div>
+              <strong>画像をここへ置く</strong>
+              <span>またはクリックして選択 / PNG・JPEG・WebP対応</span>
+            </label>
+            <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+          </div>
+
+          <section class="queue">
+            <div class="queue-head">
+              <h2>変換リスト</h2>
+              <div class="summary" id="summary">画像はまだありません</div>
+            </div>
+            <div class="items" id="items"></div>
+            <div class="actions" id="actions">
+              <button class="secondary save-folder-btn">保存先を選んで一括保存</button>
+              <button class="secondary download-all-btn">ブラウザから一括ダウンロード</button>
+            </div>
+          </section>
+        </section>
+
+        <aside class="panel settings">
+          <h2>圧縮の設定</h2>
+          <label for="format">出力形式</label>
+          <select id="format">
+            <option value="image/webp">WebP（おすすめ）</option>
+            <option value="image/jpeg">JPEG</option>
+          </select>
+
+          <label for="maxWidth">最大横幅（px）</label>
+          <input id="maxWidth" type="number" min="320" max="6000" step="10" value="1600">
+
+          <label for="quality">
+            <span class="quality-row"><span>画質</span><span id="qualityValue">82%</span></span>
+          </label>
+          <input id="quality" type="range" min="40" max="100" value="82">
+
+          <button class="primary" id="compress" disabled>全部まとめて圧縮する</button>
+          <button class="clear" id="clear" disabled>リストを空にする</button>
+
+          <div class="actions" id="actionsSettings">
+            <button class="secondary save-folder-btn">保存先を選んで一括保存</button>
+            <button class="secondary download-all-btn">ブラウザから一括ダウンロード</button>
+          </div>
+
+          <p class="note">
+            推奨設定は WebP・横幅1600px・画質82%。<br>
+            各画像の「この1枚を圧縮」ボタンから1枚ずつ個別に圧縮・保存することもできます。<br>
+            元画像は変更せず、圧縮後の画像を新しく保存します。
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panelRemove">
+      <div class="workspace">
+        <section>
+          <div class="panel">
+            <label class="dropzone" id="rmDropzone" for="rmFileInput">
+              <div class="drop-mark">↓</div>
+              <strong>画像をここへ置く</strong>
+              <span>またはクリックして選択 / PNG・JPEG・WebP対応</span>
+            </label>
+            <input id="rmFileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+          </div>
+
+          <section class="queue">
+            <div class="queue-head">
+              <h2>切り抜きリスト</h2>
+              <div class="summary" id="rmSummary">画像はまだありません</div>
+            </div>
+            <div class="items" id="rmItems"></div>
+            <div class="actions" id="rmActions">
+              <button class="secondary rm-save-folder-btn">保存先を選んで一括保存</button>
+              <button class="secondary rm-download-btn">ブラウザから一括ダウンロード</button>
+            </div>
+          </section>
+        </section>
+
+        <aside class="panel settings">
+          <h2>背景除去</h2>
+
+          <label for="rmEngine">処理エンジン</label>
+          <select id="rmEngine">
+            <option value="browser">ブラウザ内蔵モデル（標準精度）</option>
+            <option value="local">ローカルサーバー isnet-anime（高精度・イラスト向け）</option>
+          </select>
+
+          <p class="note" id="rmModelStatus" style="margin-top:10px;">
+            初回のみ処理モデル（数十MB）をダウンロードします。以降はブラウザにキャッシュされ、画像は外部へ送信されません。
+          </p>
+
+          <div id="rmLocalControls" style="display:none; margin-top:10px;">
+            <button class="secondary" id="rmStartServer" style="width:100%;">ローカルサーバーを起動</button>
+            <button class="clear" id="rmStopServer" style="width:100%; margin-top:6px;">ローカルサーバーを停止</button>
+            <p class="note" id="rmServerStatus" style="margin-top:6px;">状態: 未確認</p>
+          </div>
+
+          <button class="primary" id="rmProcess" disabled>全部まとめて背景を消す</button>
+          <button class="clear" id="rmClear" disabled>リストを空にする</button>
+
+          <div class="actions" id="rmActionsSettings">
+            <button class="secondary rm-save-folder-btn">保存先を選んで一括保存</button>
+            <button class="secondary rm-download-btn">ブラウザから一括ダウンロード</button>
+          </div>
+
+          <p class="note">
+            人物・被写体だけを自動で切り抜き、背景を透明にしたPNGを作ります。<br>
+            各画像の「この1枚の背景を消す」ボタンから1枚ずつ処理することもできます。<br>
+            マスクを手で描く必要はありません。
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panelPdf">
+      <div class="workspace">
+        <section>
+          <div class="panel">
+            <label class="dropzone" id="pdfDropzone" for="pdfFileInput">
+              <div class="drop-mark">↓</div>
+              <strong>画像をここへ置く</strong>
+              <span>またはクリックして選択 / PNG・JPEG・WebP対応・複数可</span>
+            </label>
+            <input id="pdfFileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+          </div>
+
+          <section class="queue">
+            <div class="queue-head">
+              <h2>ページ順リスト</h2>
+              <div class="summary" id="pdfSummary">画像はまだありません</div>
+            </div>
+            <div class="items" id="pdfItems"></div>
+          </section>
+        </section>
+
+        <aside class="panel settings">
+          <h2>PDFの設定</h2>
+          <label for="pdfPageMode">ページサイズ</label>
+          <select id="pdfPageMode">
+            <option value="a4">A4に収める（印刷向け）</option>
+            <option value="fit">画像サイズに合わせる（1:1）</option>
+          </select>
+
+          <label for="pdfFileName">ファイル名</label>
+          <input id="pdfFileName" type="text" value="images">
+
+          <button class="primary" id="pdfCreate" disabled>PDFを作成してダウンロード</button>
+          <button class="clear" id="pdfClear" disabled>リストを空にする</button>
+
+          <p class="note">
+            追加した順にページになります。並べ替えたい場合は「削除」で外してから追加し直してください。<br>
+            「A4に収める」は用紙の中央に収まるよう拡大縮小します。「画像サイズに合わせる」は各ページが元画像と同じサイズになります。<br>
+            元画像は変更せず、新しくPDFファイルを1つ作ります。
+          </p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const state = { files: [], results: [] };
+    const $ = (id) => document.getElementById(id);
+    const fileInput = $("fileInput");
+    const dropzone = $("dropzone");
+    const items = $("items");
+    const compressButton = $("compress");
+    const clearButton = $("clear");
+    const actions = $("actions");
+    const actionsSettings = $("actionsSettings");
+
+    $("quality").addEventListener("input", (event) => {
+      $("qualityValue").textContent = `${event.target.value}%`;
+    });
+
+    fileInput.addEventListener("change", () => addFiles(fileInput.files));
+    ["dragenter", "dragover"].forEach(type => dropzone.addEventListener(type, event => {
+      event.preventDefault();
+      dropzone.classList.add("dragover");
+    }));
+    ["dragleave", "drop"].forEach(type => dropzone.addEventListener(type, event => {
+      event.preventDefault();
+      dropzone.classList.remove("dragover");
+    }));
+    dropzone.addEventListener("drop", event => addFiles(event.dataTransfer.files));
+
+    function addFiles(fileList) {
+      const accepted = [...fileList].filter(file => /^image\/(png|jpeg|webp)$/.test(file.type));
+      state.files.push(...accepted);
+      state.results = [];
+      renderFiles();
+    }
+
+    function renderFiles() {
+      items.innerHTML = "";
+      state.files.forEach((file, index) => {
+        const item = document.createElement("article");
+        item.className = "item";
+        const result = state.results[index];
+        item.innerHTML = `
+          <img src="${URL.createObjectURL(file)}" alt="">
+          <div>
+            <div class="item-name">${escapeHtml(file.name)}</div>
+            <div class="item-meta">${formatBytes(file.size)}${result ? ` → ${formatBytes(result.blob.size)} <span class="save-badge">-${savingRate(file.size, result.blob.size)}</span>` : ""}</div>
+          </div>
+          <div class="item-actions">
+            <button class="item-btn compress-one" data-index="${index}">${result ? "再圧縮" : "この1枚を圧縮"}</button>
+            ${result ? `<button class="item-btn save-one is-done" data-index="${index}">この1枚を保存</button>` : ""}
+          </div>
+        `;
+        items.appendChild(item);
+      });
+      $("summary").textContent = state.files.length
+        ? `${state.files.length}枚 / 元画像 ${formatBytes(state.files.reduce((sum, file) => sum + file.size, 0))}`
+        : "画像はまだありません";
+      compressButton.disabled = state.files.length === 0;
+      clearButton.disabled = state.files.length === 0;
+      actions.classList.toggle("show", state.results.length > 0);
+      actionsSettings.classList.toggle("show", state.results.length > 0);
+    }
+
+    items.addEventListener("click", async (event) => {
+      const compressBtn = event.target.closest(".compress-one");
+      const saveBtn = event.target.closest(".save-one");
+
+      if (compressBtn) {
+        const index = Number(compressBtn.dataset.index);
+        compressBtn.disabled = true;
+        compressBtn.textContent = "圧縮中...";
+        state.results[index] = await compressImage(state.files[index]);
+        renderFiles();
+      }
+
+      if (saveBtn) {
+        const index = Number(saveBtn.dataset.index);
+        downloadOne(state.results[index]);
+      }
+    });
+
+    function downloadOne(result) {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(result.blob);
+      link.download = result.name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    $("compress").addEventListener("click", async () => {
+      compressButton.disabled = true;
+      compressButton.textContent = "圧縮しています...";
+      state.results = [];
+      for (const file of state.files) {
+        state.results.push(await compressImage(file));
+      }
+      compressButton.disabled = false;
+      compressButton.textContent = "設定を変えて再圧縮する";
+      renderFiles();
+      const totalBefore = state.files.reduce((sum, file) => sum + file.size, 0);
+      const totalAfter = state.results.reduce((sum, result) => sum + result.blob.size, 0);
+      $("summary").innerHTML = `圧縮後 ${formatBytes(totalAfter)} / <strong>${savingRate(totalBefore, totalAfter)}削減</strong>`;
+    });
+
+    async function compressImage(file) {
+      const bitmap = await createImageBitmap(file);
+      const maxWidth = Number($("maxWidth").value) || 1600;
+      const scale = Math.min(1, maxWidth / bitmap.width);
+      const width = Math.round(bitmap.width * scale);
+      const height = Math.round(bitmap.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+      if ($("format").value === "image/jpeg") {
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, width, height);
+      }
+      context.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      const mime = $("format").value;
+      const quality = Number($("quality").value) / 100;
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, mime, quality));
+      const extension = mime === "image/webp" ? "webp" : "jpg";
+      const base = file.name.replace(/\.[^.]+$/, "");
+      return { blob, name: `${base}.${extension}` };
+    }
+
+    document.querySelectorAll(".download-all-btn").forEach(button => button.addEventListener("click", async () => {
+      for (const result of state.results) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(result.blob);
+        link.download = result.name;
+        link.click();
+        await new Promise(resolve => setTimeout(resolve, 180));
+        URL.revokeObjectURL(link.href);
+      }
+    }));
+
+    document.querySelectorAll(".save-folder-btn").forEach(button => button.addEventListener("click", async () => {
+      if (!window.showDirectoryPicker) {
+        alert("このブラウザは保存先フォルダの選択に対応していません。ChromeまたはEdgeで開いてください。");
+        return;
+      }
+      const directory = await window.showDirectoryPicker({ mode: "readwrite" });
+      for (const result of state.results) {
+        const handle = await directory.getFileHandle(result.name, { create: true });
+        const writable = await handle.createWritable();
+        await writable.write(result.blob);
+        await writable.close();
+      }
+      alert(`${state.results.length}枚を保存しました。`);
+    }));
+
+    $("clear").addEventListener("click", () => {
+      state.files = [];
+      state.results = [];
+      fileInput.value = "";
+      compressButton.textContent = "画像を圧縮する";
+      renderFiles();
+    });
+
+    function formatBytes(bytes) {
+      if (!bytes) return "0 KB";
+      const units = ["B", "KB", "MB", "GB"];
+      const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+    }
+
+    function savingRate(before, after) {
+      return `${Math.max(0, Math.round((1 - after / before) * 100))}%`;
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement("div");
+      div.textContent = value;
+      return div.innerHTML;
+    }
+
+    const tabs = [
+      { btn: $("tabCompressBtn"), panel: $("panelCompress") },
+      { btn: $("tabRemoveBtn"), panel: $("panelRemove") },
+      { btn: $("tabPdfBtn"), panel: $("panelPdf") }
+    ];
+    tabs.forEach(({ btn, panel }) => {
+      btn.addEventListener("click", () => {
+        tabs.forEach(other => {
+          other.btn.classList.toggle("active", other.btn === btn);
+          other.panel.classList.toggle("active", other.panel === panel);
+        });
+      });
+    });
+  </script>
+
+  <script type="module">
+    const bgState = { files: [], results: [] };
+    const rmFileInput = document.getElementById("rmFileInput");
+    const rmDropzone = document.getElementById("rmDropzone");
+    const rmItems = document.getElementById("rmItems");
+    const rmProcessButton = document.getElementById("rmProcess");
+    const rmClearButton = document.getElementById("rmClear");
+    const rmActions = document.getElementById("rmActions");
+    const rmActionsSettings = document.getElementById("rmActionsSettings");
+    const rmModelStatus = document.getElementById("rmModelStatus");
+    const rmSummary = document.getElementById("rmSummary");
+    const rmEngine = document.getElementById("rmEngine");
+    const rmLocalControls = document.getElementById("rmLocalControls");
+    const rmStartServerButton = document.getElementById("rmStartServer");
+    const rmStopServerButton = document.getElementById("rmStopServer");
+    const rmServerStatus = document.getElementById("rmServerStatus");
+    const LOCAL_SERVER_URL = "http://127.0.0.1:8765";
+
+    async function checkLocalServer() {
+      try {
+        const response = await fetch(`${LOCAL_SERVER_URL}/health`, { signal: AbortSignal.timeout(1500) });
+        return response.ok;
+      } catch {
+        return false;
+      }
+    }
+
+    async function refreshServerStatus() {
+      const online = await checkLocalServer();
+      rmServerStatus.textContent = online ? "状態: 起動中です" : "状態: 停止中です";
+      return online;
+    }
+
+    rmStartServerButton.addEventListener("click", async () => {
+      rmStartServerButton.disabled = true;
+      rmServerStatus.textContent = "状態: 起動しています…";
+      window.location.href = "vipbg://start";
+
+      const deadline = Date.now() + 30000;
+      let online = false;
+      while (Date.now() < deadline) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        online = await checkLocalServer();
+        if (online) break;
+      }
+      rmServerStatus.textContent = online
+        ? "状態: 起動中です"
+        : "状態: 起動を確認できませんでした（手動でstart_server.batを起動してください）";
+      rmStartServerButton.disabled = false;
+    });
+
+    rmStopServerButton.addEventListener("click", async () => {
+      rmStopServerButton.disabled = true;
+      rmServerStatus.textContent = "状態: 停止しています…";
+      try {
+        await fetch(`${LOCAL_SERVER_URL}/shutdown`, { method: "POST", signal: AbortSignal.timeout(1500) });
+      } catch {
+        // サーバーが自プロセスを終了する際に応答を返せず接続が切れるのは正常
+      }
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const online = await checkLocalServer();
+      rmServerStatus.textContent = online ? "状態: 起動中です（停止に失敗しました）" : "状態: 停止中です";
+      rmStopServerButton.disabled = false;
+    });
+
+    rmEngine.addEventListener("change", async () => {
+      if (rmEngine.value === "local") {
+        rmLocalControls.style.display = "block";
+        await refreshServerStatus();
+      } else {
+        rmLocalControls.style.display = "none";
+      }
+    });
+
+    let removeBackgroundFn = null;
+    async function loadRemover() {
+      if (!removeBackgroundFn) {
+        rmModelStatus.textContent = "処理モデルを読み込んでいます…（初回は数十MBのダウンロードがあります）";
+        const mod = await import("https://esm.sh/@imgly/background-removal@1.5.8");
+        removeBackgroundFn = mod.removeBackground;
+        rmModelStatus.textContent = "モデルの読み込み済みです。画像は外部へ送信されません。";
+      }
+      return removeBackgroundFn;
+    }
+
+    function updateEngineStatus() {
+      if (rmEngine.value === "local") {
+        rmModelStatus.textContent = `ローカルサーバー（${LOCAL_SERVER_URL}）に接続します。start_server.batで起動しておいてください。`;
+      } else {
+        rmModelStatus.textContent = "初回のみ処理モデル（数十MB）をダウンロードします。以降はブラウザにキャッシュされ、画像は外部へ送信されません。";
+      }
+    }
+    rmEngine.addEventListener("change", updateEngineStatus);
+    updateEngineStatus();
+
+    rmFileInput.addEventListener("change", () => addRmFiles(rmFileInput.files));
+    ["dragenter", "dragover"].forEach(type => rmDropzone.addEventListener(type, event => {
+      event.preventDefault();
+      rmDropzone.classList.add("dragover");
+    }));
+    ["dragleave", "drop"].forEach(type => rmDropzone.addEventListener(type, event => {
+      event.preventDefault();
+      rmDropzone.classList.remove("dragover");
+    }));
+    rmDropzone.addEventListener("drop", event => addRmFiles(event.dataTransfer.files));
+
+    function addRmFiles(fileList) {
+      const accepted = [...fileList].filter(file => /^image\/(png|jpeg|webp)$/.test(file.type));
+      bgState.files.push(...accepted);
+      bgState.results = [];
+      renderRmFiles();
+    }
+
+    function renderRmFiles() {
+      rmItems.innerHTML = "";
+      bgState.files.forEach((file, index) => {
+        const item = document.createElement("article");
+        item.className = "item";
+        const result = bgState.results[index];
+        const thumbSrc = URL.createObjectURL(result ? result.blob : file);
+        item.innerHTML = `
+          <img class="${result ? "cutout-thumb" : ""}" src="${thumbSrc}" alt="">
+          <div>
+            <div class="item-name">${escapeHtml(file.name)}</div>
+            <div class="item-meta">${formatBytes(file.size)}${result ? ` → ${formatBytes(result.blob.size)}` : ""}</div>
+          </div>
+          <div class="item-actions">
+            <button class="item-btn rm-one" data-index="${index}">${result ? "再処理" : "この1枚の背景を消す"}</button>
+            ${result ? `<button class="item-btn rm-save-one is-done" data-index="${index}">この1枚を保存</button>` : ""}
+          </div>
+        `;
+        rmItems.appendChild(item);
+      });
+      rmSummary.textContent = bgState.files.length ? `${bgState.files.length}枚` : "画像はまだありません";
+      rmProcessButton.disabled = bgState.files.length === 0;
+      rmClearButton.disabled = bgState.files.length === 0;
+      rmActions.classList.toggle("show", bgState.results.length > 0);
+      rmActionsSettings.classList.toggle("show", bgState.results.length > 0);
+    }
+
+    async function removeOne(file) {
+      const base = file.name.replace(/\.[^.]+$/, "");
+
+      if (rmEngine.value === "local") {
+        const blob = await removeViaLocalServer(file);
+        return { blob, name: `${base}.png` };
+      }
+
+      const removeBg = await loadRemover();
+      const rawBlob = await removeBg(file, { output: { format: "image/png" } });
+      const blob = await refineCutout(file, rawBlob);
+      return { blob, name: `${base}.png` };
+    }
+
+    async function removeViaLocalServer(file) {
+      const form = new FormData();
+      form.append("file", file, file.name);
+      let response;
+      try {
+        response = await fetch(`${LOCAL_SERVER_URL}/remove-bg`, { method: "POST", body: form });
+      } catch (error) {
+        throw new Error("ローカルサーバーに接続できません。start_server.batを起動しているか確認してください。");
+      }
+      if (!response.ok) {
+        throw new Error(`ローカルサーバーがエラーを返しました (${response.status})`);
+      }
+      return response.blob();
+    }
+
+    async function refineCutout(originalFile, resultBlob) {
+      const [origBitmap, resultBitmap] = await Promise.all([
+        createImageBitmap(originalFile),
+        createImageBitmap(resultBlob)
+      ]);
+      const width = origBitmap.width;
+      const height = origBitmap.height;
+
+      const origCanvas = document.createElement("canvas");
+      origCanvas.width = width;
+      origCanvas.height = height;
+      const origCtx = origCanvas.getContext("2d");
+      origCtx.drawImage(origBitmap, 0, 0, width, height);
+      const origData = origCtx.getImageData(0, 0, width, height);
+
+      const maskCanvas = document.createElement("canvas");
+      maskCanvas.width = width;
+      maskCanvas.height = height;
+      const maskCtx = maskCanvas.getContext("2d");
+      maskCtx.drawImage(resultBitmap, 0, 0, width, height);
+      const maskAlpha = maskCtx.getImageData(0, 0, width, height).data;
+
+      origBitmap.close();
+      resultBitmap.close();
+
+      const total = width * height;
+      const alpha = new Uint8ClampedArray(total);
+      for (let i = 0; i < total; i++) alpha[i] = maskAlpha[i * 4 + 3];
+
+      // 四隅から背景色を推定し、透明判定された画素が「背景色に近いか」で
+      // 本当の背景か（モデルが誤って消した）体の一部かを判定する。
+      // フレーム端で体が切れている構図でも、色の違いで正しく塗り戻せる。
+      const bgColor = sampleBackgroundColor(origData.data, width, height);
+      const ALPHA_THRESHOLD = 250;
+      const COLOR_DIST_THRESHOLD = 45;
+
+      const finalData = origCtx.createImageData(width, height);
+      for (let i = 0; i < total; i++) {
+        const o = i * 4;
+        const r = origData.data[o];
+        const g = origData.data[o + 1];
+        const b = origData.data[o + 2];
+        finalData.data[o] = r;
+        finalData.data[o + 1] = g;
+        finalData.data[o + 2] = b;
+
+        if (alpha[i] < ALPHA_THRESHOLD) {
+          const dr = r - bgColor.r;
+          const dg = g - bgColor.g;
+          const db = b - bgColor.b;
+          const colorDist = Math.sqrt(dr * dr + dg * dg + db * db);
+          finalData.data[o + 3] = colorDist > COLOR_DIST_THRESHOLD ? 255 : alpha[i];
+        } else {
+          finalData.data[o + 3] = alpha[i];
+        }
+      }
+
+      const outCanvas = document.createElement("canvas");
+      outCanvas.width = width;
+      outCanvas.height = height;
+      outCanvas.getContext("2d").putImageData(finalData, 0, 0);
+      return new Promise(resolve => outCanvas.toBlob(resolve, "image/png"));
+    }
+
+    function sampleBackgroundColor(data, width, height) {
+      const patch = Math.max(4, Math.round(Math.min(width, height) * 0.03));
+      const corners = [
+        [0, 0], [width - patch, 0], [0, height - patch], [width - patch, height - patch]
+      ];
+      let r = 0, g = 0, b = 0, count = 0;
+      for (const [cx, cy] of corners) {
+        for (let y = cy; y < cy + patch; y++) {
+          for (let x = cx; x < cx + patch; x++) {
+            const o = (y * width + x) * 4;
+            r += data[o];
+            g += data[o + 1];
+            b += data[o + 2];
+            count++;
+          }
+        }
+      }
+      return { r: r / count, g: g / count, b: b / count };
+    }
+
+    rmItems.addEventListener("click", async (event) => {
+      const rmBtn = event.target.closest(".rm-one");
+      const saveBtn = event.target.closest(".rm-save-one");
+
+      if (rmBtn) {
+        const index = Number(rmBtn.dataset.index);
+        rmBtn.disabled = true;
+        rmBtn.textContent = "処理中...";
+        try {
+          bgState.results[index] = await removeOne(bgState.files[index]);
+        } catch (error) {
+          alert("背景除去に失敗しました: " + error.message);
+        }
+        renderRmFiles();
+      }
+
+      if (saveBtn) {
+        const index = Number(saveBtn.dataset.index);
+        downloadOneRm(bgState.results[index]);
+      }
+    });
+
+    function downloadOneRm(result) {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(result.blob);
+      link.download = result.name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    rmProcessButton.addEventListener("click", async () => {
+      rmProcessButton.disabled = true;
+      rmProcessButton.textContent = "処理しています...";
+      bgState.results = [];
+      for (const file of bgState.files) {
+        try {
+          bgState.results.push(await removeOne(file));
+        } catch (error) {
+          alert("背景除去に失敗しました: " + error.message);
+          break;
+        }
+      }
+      rmProcessButton.disabled = false;
+      rmProcessButton.textContent = "設定を変えて再処理する";
+      renderRmFiles();
+    });
+
+    document.querySelectorAll(".rm-download-btn").forEach(button => button.addEventListener("click", async () => {
+      for (const result of bgState.results) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(result.blob);
+        link.download = result.name;
+        link.click();
+        await new Promise(resolve => setTimeout(resolve, 180));
+        URL.revokeObjectURL(link.href);
+      }
+    }));
+
+    document.querySelectorAll(".rm-save-folder-btn").forEach(button => button.addEventListener("click", async () => {
+      if (!window.showDirectoryPicker) {
+        alert("このブラウザは保存先フォルダの選択に対応していません。ChromeまたはEdgeで開いてください。");
+        return;
+      }
+      const directory = await window.showDirectoryPicker({ mode: "readwrite" });
+      for (const result of bgState.results) {
+        const handle = await directory.getFileHandle(result.name, { create: true });
+        const writable = await handle.createWritable();
+        await writable.write(result.blob);
+        await writable.close();
+      }
+      alert(`${bgState.results.length}枚を保存しました。`);
+    }));
+
+    rmClearButton.addEventListener("click", () => {
+      bgState.files = [];
+      bgState.results = [];
+      rmFileInput.value = "";
+      rmProcessButton.textContent = "全部まとめて背景を消す";
+      renderRmFiles();
+    });
+
+    function formatBytes(bytes) {
+      if (!bytes) return "0 KB";
+      const units = ["B", "KB", "MB", "GB"];
+      const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement("div");
+      div.textContent = value;
+      return div.innerHTML;
+    }
+  </script>
+
+  <script type="module">
+    const pdfState = { files: [] };
+    const pdfFileInput = document.getElementById("pdfFileInput");
+    const pdfDropzone = document.getElementById("pdfDropzone");
+    const pdfItems = document.getElementById("pdfItems");
+    const pdfSummary = document.getElementById("pdfSummary");
+    const pdfCreateButton = document.getElementById("pdfCreate");
+    const pdfClearButton = document.getElementById("pdfClear");
+    const pdfPageMode = document.getElementById("pdfPageMode");
+    const pdfFileName = document.getElementById("pdfFileName");
+
+    pdfFileInput.addEventListener("change", () => addPdfFiles(pdfFileInput.files));
+    ["dragenter", "dragover"].forEach(type => pdfDropzone.addEventListener(type, event => {
+      event.preventDefault();
+      pdfDropzone.classList.add("dragover");
+    }));
+    ["dragleave", "drop"].forEach(type => pdfDropzone.addEventListener(type, event => {
+      event.preventDefault();
+      pdfDropzone.classList.remove("dragover");
+    }));
+    pdfDropzone.addEventListener("drop", event => addPdfFiles(event.dataTransfer.files));
+
+    function addPdfFiles(fileList) {
+      const accepted = [...fileList].filter(file => /^image\/(png|jpeg|webp)$/.test(file.type));
+      pdfState.files.push(...accepted);
+      renderPdfFiles();
+    }
+
+    function renderPdfFiles() {
+      pdfItems.innerHTML = "";
+      pdfState.files.forEach((file, index) => {
+        const item = document.createElement("article");
+        item.className = "item";
+        item.innerHTML = `
+          <img src="${URL.createObjectURL(file)}" alt="">
+          <div>
+            <div class="item-name">${(index + 1)}ページ目 ・ ${escapeHtml(file.name)}</div>
+            <div class="item-meta">${formatBytes(file.size)}</div>
+          </div>
+          <div class="item-actions">
+            <button class="item-btn pdf-remove-one" data-index="${index}">削除</button>
+          </div>
+        `;
+        pdfItems.appendChild(item);
+      });
+      pdfSummary.textContent = pdfState.files.length ? `${pdfState.files.length}ページ` : "画像はまだありません";
+      pdfCreateButton.disabled = pdfState.files.length === 0;
+      pdfClearButton.disabled = pdfState.files.length === 0;
+    }
+
+    pdfItems.addEventListener("click", (event) => {
+      const removeBtn = event.target.closest(".pdf-remove-one");
+      if (!removeBtn) return;
+      const index = Number(removeBtn.dataset.index);
+      pdfState.files.splice(index, 1);
+      renderPdfFiles();
+    });
+
+    pdfClearButton.addEventListener("click", () => {
+      pdfState.files = [];
+      pdfFileInput.value = "";
+      renderPdfFiles();
+    });
+
+    async function fileToJpegDataUrl(file) {
+      const bitmap = await createImageBitmap(file);
+      const canvas = document.createElement("canvas");
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bitmap, 0, 0);
+      bitmap.close();
+      return {
+        dataUrl: canvas.toDataURL("image/jpeg", 0.92),
+        width: canvas.width,
+        height: canvas.height
+      };
+    }
+
+    pdfCreateButton.addEventListener("click", async () => {
+      pdfCreateButton.disabled = true;
+      pdfCreateButton.textContent = "作成しています...";
+      try {
+        const { jsPDF } = await import("https://esm.sh/jspdf@2.5.2");
+        let doc;
+        for (const file of pdfState.files) {
+          const image = await fileToJpegDataUrl(file);
+          if (pdfPageMode.value === "fit") {
+            const format = [image.width, image.height];
+            if (!doc) {
+              doc = new jsPDF({ unit: "px", format });
+            } else {
+              doc.addPage(format);
+            }
+            doc.addImage(image.dataUrl, "JPEG", 0, 0, image.width, image.height);
+          } else {
+            if (!doc) {
+              doc = new jsPDF({ unit: "pt", format: "a4" });
+            } else {
+              doc.addPage("a4", "p");
+            }
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 24;
+            const maxWidth = pageWidth - margin * 2;
+            const maxHeight = pageHeight - margin * 2;
+            const scale = Math.min(maxWidth / image.width, maxHeight / image.height);
+            const width = image.width * scale;
+            const height = image.height * scale;
+            const x = (pageWidth - width) / 2;
+            const y = (pageHeight - height) / 2;
+            doc.addImage(image.dataUrl, "JPEG", x, y, width, height);
+          }
+        }
+        const name = (pdfFileName.value || "images").trim() || "images";
+        doc.save(`${name}.pdf`);
+      } catch (error) {
+        alert("PDFの作成に失敗しました: " + error.message);
+      }
+      pdfCreateButton.disabled = false;
+      pdfCreateButton.textContent = "PDFを作成してダウンロード";
+    });
+
+    function formatBytes(bytes) {
+      if (!bytes) return "0 KB";
+      const units = ["B", "KB", "MB", "GB"];
+      const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement("div");
+      div.textContent = value;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+
+</html>
